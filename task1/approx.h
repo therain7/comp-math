@@ -4,15 +4,9 @@
 #include <stdint.h>
 
 typedef struct {
-    double x;
-    double y;
-} Point;
-
-typedef struct {
     uint32_t size;
     double h;
 
-    Point **points;
     double **u;
     double **f;
 } Net;
@@ -23,10 +17,8 @@ Net *init_net(uint32_t size, Fun u, Fun f);
 
 void free_net(Net *net);
 
-void print_net(const Net *net);
-
 uint32_t approximate_seq(Net *net, double eps);
 
-int32_t approximate_prl(Net *net, uint32_t block_size, double eps);
+int32_t approximate_prl(Net *net, uint32_t threads_num, uint32_t block_size, double eps);
 
 #endif // !APPROX_H
