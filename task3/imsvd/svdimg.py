@@ -29,8 +29,8 @@ class SVDImage:
     def of_rgb_image(
         cls,
         img: RGBImage,
-        svd: Callable[[UInt8Matrix], SVDResult],
         desired_size: int,
+        svd: Callable[[UInt8Matrix], SVDResult],
     ) -> Self:
         k = math.floor(
             (desired_size - 3 * INT_SIZE - 5)
