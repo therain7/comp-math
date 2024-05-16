@@ -42,7 +42,7 @@ def _power_single(
     return u.reshape(rows, 1), sigma, v.reshape(cols, 1)
 
 
-def power_svd(matrix: UIntMatrix):
+def power_svd(matrix: UIntMatrix) -> SVDResult:
     rank = np.linalg.matrix_rank(matrix)
     um = np.zeros((matrix.shape[0], 1))
     sv: list[np.float32] = []
@@ -69,4 +69,33 @@ def power_svd(matrix: UIntMatrix):
         U=um[:, 1:].astype(np.float32),
         S=np.array(sv),
         Vh=vm[:, 1:].T.astype(np.float32),
+    )
+
+
+# Block Power Method SVD
+# https://www.emis.de/journals/ASUO/mathematics_/anale2015vol2/Bentbib_A.H.__Kanber_A..pdf
+
+
+def block_power_svd(matrix: UIntMatrix) -> SVDResult:
+    tol = 1000
+    err = tol + 1
+
+    rows, cols = matrix.shape
+    k = min(rows, cols)
+
+    um: Float32Matrix = np.array([])
+    sm: Float32Matrix = np.array([])
+    vm = np.random.normal(0, 1, (cols, rows))
+    while err > tol:
+        qm, rm = np.linalg.qr(matrix @ vm)
+        um = qm[:, :k]
+        qm, rm = np.linalg.qr(matrix.T @ um)
+        vm = qm[:, :k]
+        sm = rm[:k, :k]
+        err = np.linalg.norm(matrix @ vm - um @ sm)
+
+    return SVDResult(
+        U=um.astype(np.float32),
+        S=np.diag(sm).astype(np.float32),
+        Vh=vm.T.astype(np.float32),
     )

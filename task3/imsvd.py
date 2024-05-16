@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from imsvd.rgbimg import RGBImage
-from imsvd.svd import numpy_svd, power_svd
+from imsvd.svd import block_power_svd, numpy_svd, power_svd
 from imsvd.svdimg import SVDImage
 
 
@@ -18,7 +18,10 @@ def main() -> None:
     parser.add_argument("-o", "--output", help="output file path", required=True)
     parser.add_argument("-r", "--ratio", help="compression ratio", type=float)
     parser.add_argument(
-        "-m", "--method", help="svd computation method", choices=["numpy", "power"]
+        "-m",
+        "--method",
+        help="svd computation method",
+        choices=["numpy", "power", "block_power"],
     )
     parser.add_argument(
         "-d", "--decompress", action="store_true", help="set to decompress image"
@@ -46,6 +49,8 @@ def compress(inp: Path, out: Path, ratio: float, method: str) -> None:
             svd = numpy_svd
         case "power":
             svd = power_svd
+        case "block_power":
+            svd = block_power_svd
         case _:
             raise ValueError("Unknown method")
 
